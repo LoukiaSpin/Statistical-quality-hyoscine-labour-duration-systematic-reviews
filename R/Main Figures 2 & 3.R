@@ -9,29 +9,23 @@
 
 
 ## Load libraries ----
-list.of.packages <- c("readxl", "ggplot2")
-lapply(list.of.packages, require, character.only = TRUE); rm(list.of.packages)
+library(ggplot2)
 
 
 ## Load data ----
 # Systematic review level
-data_syst <- as.data.frame(read_excel("./41_Extraction Reviews & Trials/Extraction form_Reviews_V0.1.xlsx", skip = 1, na = "NA"))[1:8, c(2, 3, 5, 25, 27:29, 34, 36, 37, 39, 40)]
-colnames(data_syst)[c(2, 4:12)] <- 
-  c("First_author", "MA_section", "I2_assessed", "Q_test_assessed", "tau2_assessed", "Subgroup", "Metareg", "Sensitivity", "Pub_bias_funnel", "Pub_bias_Egger")
+load("./data/data_syst_level.RData")
 
 # Meta-analysis level
-data_meta <- as.data.frame(read_excel("./41_Extraction Reviews & Trials/Extraction form_Reviews_V0.1.xlsx", skip = 1, na = "NA"))[1:8, c(2:3, 5, 58, 63, 68, 70, 72)]
-colnames(data_meta)[c(2, 4:8)] <- 
-  c("First_author", "tau2_reported", "I2_reported", "Heter_interpret_I2", "Heter_interpret_tau2", "Heter_interpret_Q")
-
+load("./data/data_meta_level.RData")
 
 
 ## Main Figure 2 (SYSTEMATIC REVIEW LEVEL) ----
 # Paste First_author with Year
-data_syst$author_year <- factor(paste(data_syst$First_author, data_syst$Year))
+data_syst_level$author_year <- factor(paste(data_syst_level$First_author, data_syst_level$Year))
 
 # Re-order the whole dataset by year and alphabetically
-data_syst_new <- data_syst[order(data_syst$Year, data_syst$First_author), ]
+data_syst_new <- data_syst_level[order(data_syst_level$Year, data_syst_level$First_author), ]
 
 # Re-construct isolated dataset to create a heatmap-like graph
 methods_syst <- data.frame(value = unlist(data_syst_new[, c("I2_assessed", "Q_test_assessed", "tau2_assessed", "Subgroup", "Metareg", "Sensitivity", "Pub_bias_funnel", "Pub_bias_Egger")]),
@@ -45,7 +39,7 @@ methods_syst <- data.frame(value = unlist(data_syst_new[, c("I2_assessed", "Q_te
 methods_syst_new <- methods_syst[order(methods_syst$year, methods_syst$author), ]
 
 # Obtain the heatmap-like graph
-tiff("./40_Analysis & Results/Figure 2.tiff", 
+tiff("./Figures/Figure 2.tiff", 
      height = 20, 
      width = 39, 
      units = 'cm', 
@@ -79,13 +73,13 @@ dev.off()
 
 ## Main Figure 3 (SELECTED META-ANALYSIS LEVEL) ----
 # Paste First_author with Year
-data_meta$author_year <- factor(paste(data_meta$First_author, data_meta$Year))
+data_meta_level$author_year <- factor(paste(data_meta_level$First_author, data_meta_level$Year))
 
 # Re-order the whole dataset by year and alphabetically
-data_meta_new <- data_meta[order(data_meta$Year, data_meta$First_author), ]
+data_meta_new <- data_meta_level[order(data_meta_level$Year, data_meta_level$First_author), ]
 
 # Re-construct isolated dataset to create a heatmap-like graph
-report_meta <- data.frame(value = unlist(data_meta_new[, c(5, 4, 6:8)]),
+report_meta <- data.frame(value = unlist(data_meta_new[, c(21, 19, 23, 25, 27)]),
                           tool = rep(c("I-squared", "tau-squared", "I-squared", "tau-squared", "Cochran's Q-statistic"), each = dim(data_meta_new)[1]),
                           review = rep(data_meta_new[, "author_year"], 5),
                           year = rep(data_meta_new[, "Year"], 5),
@@ -96,7 +90,7 @@ report_meta <- data.frame(value = unlist(data_meta_new[, c(5, 4, 6:8)]),
 report_meta_new <- report_meta[order(report_meta$year, report_meta$author), ]
 
 # Obtain the heatmap-like graph
-tiff("./40_Analysis & Results/Figure 3.tiff", 
+tiff("./Figures/Figure 3.tiff", 
      height = 20, 
      width = 35, 
      units = 'cm', 

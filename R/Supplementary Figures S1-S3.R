@@ -9,28 +9,24 @@
 
 
 ## Load libraries ----
-list.of.packages <- c("readxl", "ggplot2", "ggpubr", "plyr", "reshape2")
+list.of.packages <- c("ggplot2", "ggpubr", "plyr")
 lapply(list.of.packages, require, character.only = TRUE); rm(list.of.packages)
 
 
 ## Load data ----
 # Systematic review level
-data_syst <- as.data.frame(read_excel("./41_Extraction Reviews & Trials/Extraction form_Reviews_V0.1.xlsx", skip = 1, na = "NA"))[1:8, c(2, 3, 5, 7:9, 16, 18, 20:22, 24)]
-colnames(data_syst)[c(2, 4:6, 8:12)] <- 
-  c("First_author", "Impact_factor", "Total_authors", "Authors_continent", "Protocol_available", "PRISMA_mentioned", "RoB_assessed", "RoB_tool", "GRADE_reported")
+load("./data/data_syst_level.RData")
 
 # Meta-analysis level
-data_meta <- as.data.frame(read_excel("./41_Extraction Reviews & Trials/Extraction form_Reviews_V0.1.xlsx", skip = 1, na = "NA"))[1:8, c(2:3, 5, 49, 51:52)]
-colnames(data_meta)[c(2, 4:6)] <- 
-  c("First_author", "Total_studies", "Total_sample_HBB", "Total_sample_ctrl")
+load("./data/data_meta_level.RData")
 
 
 ## Supplementary Figure 1 (SYSTEMATIC REVIEW LEVEL) ----
 # Paste First_author with Year
-data_syst$author_year <- factor(paste(data_syst$First_author, data_syst$Year))
+data_syst_level$author_year <- factor(paste(data_syst_level$First_author, data_syst_level$Year))
 
 # Re-order the whole dataset by year and alphabetically
-data_syst_new <- data_syst[order(data_syst$Year, data_syst$First_author), ]
+data_syst_new <- data_syst_level[order(data_syst_level$Year, data_syst_level$First_author), ]
 
 # Left-sided barplot (Number of authors, first author, and country) 
 authors <- ggplot(data_syst_new,
@@ -95,7 +91,7 @@ impact <- ggplot(data_syst_new,
         legend.position = "bottom")
 
 # Bring together and dave
-tiff("./40_Analysis & Results/Supplementary Figure 1.tiff", 
+tiff("./Figures/Supplementary Figure 1.tiff", 
      height = 20, 
      width = 35, 
      units = 'cm', 
@@ -124,7 +120,7 @@ quality_syst <- data.frame(value = unlist(data_syst_new[, c("Protocol_available_
 quality_syst_new <- quality_syst[order(quality_syst$year, quality_syst$author), ]
 
 # Obtain the heatmap-like graph
-tiff("./40_Analysis & Results/Supplementary Figure 2.tiff", 
+tiff("./Figures/Supplementary Figure 2.tiff", 
      height = 20, 
      width = 35, 
      units = 'cm', 
@@ -162,10 +158,10 @@ dev.off()
 
 ## Supplementary Figure 3 (SELECTED META-ANALYSIS LEVEL) ----
 # Paste First_author with Year
-data_meta$author_year <- factor(paste(data_meta$First_author, data_meta$Year))
+data_meta_level$author_year <- factor(paste(data_meta_level$First_author, data_meta_level$Year))
 
 # Re-order the whole dataset by year and alphabetically
-data_meta_new <- data_meta[order(data_meta$Year, data_meta$First_author), ]
+data_meta_new <- data_meta_level[order(data_meta_level$Year, data_meta_level$First_author), ]
 
 # Prepare dataset on sample size
 data_sample <- data.frame(review = rep(data_meta_new$author_year, 2),
@@ -178,7 +174,7 @@ data_sample <- data.frame(review = rep(data_meta_new$author_year, 2),
 data_sample_new <- data_sample[order(data_sample$year, data_sample$author), ]
 
 # Bar plot on sample size per review
-tiff("./40_Analysis & Results/Supplementary Figure 3.tiff", 
+tiff("./Figures/Supplementary Figure 3.tiff", 
      height = 20, 
      width = 35, 
      units = 'cm', 

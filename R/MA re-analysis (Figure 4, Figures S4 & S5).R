@@ -9,17 +9,18 @@
 
 
 ## Load libraries ----
-list.of.packages <- c("readxl", "meta", "reshape2", "ggplot2", "ggpubr")
+list.of.packages <- c("meta", "ggplot2")
 lapply(list.of.packages, require, character.only = TRUE); rm(list.of.packages)
 
 
 ## Load data ----
-data_meta <- as.data.frame(read_excel("./41_Extraction Reviews & Trials/Extraction form_Included studies.xlsx", sheet = "Arm-based data"))[, -18]
-colnames(data_meta)[c(3:4, 6)] <- c("First_author_SR", "Year_review", "First_author_trial")
+load("./data/data_meta.RData")
+#data_meta <- as.data.frame(read_excel("./41_Extraction Reviews & Trials/Extraction form_Included studies.xlsx", sheet = "Arm-based data"))[, -18]
+#colnames(data_meta)[c(3:4, 6)] <- c("First_author_SR", "Year_review", "First_author_trial")
 
 
 ## Split dataset per selected meta-analysis ----
-data_set_split <- lapply(1:8, function(x) subset(data_meta, ID == x))
+data_set_split <- lapply(1:8, function(x) subset(data_meta_outcome, ID == x))
 
 
 ## Perform RE-MA with DSL ----
@@ -59,7 +60,7 @@ I2_lower_orig <- unlist(lapply(meta_orig, function(x) x$lower.I2))
 I2_upper_orig <- unlist(lapply(meta_orig, function(x) x$upper.I2))
 
 # Bring all in a data-frame
-res_meta_orig <- data.frame(review = paste(unique(data_meta$First_author_SR), unlist(lapply(data_set_split, function(x) unique(x$Year_review)))),
+res_meta_orig <- data.frame(review = paste(unique(data_meta_outcome$First_author_SR), unlist(lapply(data_set_split, function(x) unique(x$Year_review)))),
                             MD = MD_orig, MD_lower = MD_lower_orig, MD_upper = MD_upper_orig, 
                             tau = tau_orig, tau_lower = tau_lower_orig, tau_upper = tau_upper_orig, 
                             I2 = I2_orig, I2_lower = I2_lower_orig, I2_upper = I2_upper_orig, 
@@ -100,7 +101,7 @@ pred_lower_reanal <- unlist(lapply(meta_reanal, function(x) x$lower.predict))
 pred_upper_reanal <- unlist(lapply(meta_reanal, function(x) x$upper.predict))
 
 # Bring all in a data-frame
-res_meta_reanal <- data.frame(review = paste(unique(data_meta$First_author_SR), unlist(lapply(data_set_split, function(x) unique(x$Year_review)))),
+res_meta_reanal <- data.frame(review = paste(unique(data_meta_outcome$First_author_SR), unlist(lapply(data_set_split, function(x) unique(x$Year_review)))),
                               MD = MD_reanal, MD_lower = MD_lower_reanal, MD_upper = MD_upper_reanal, 
                               tau = tau_reanal, tau_lower = tau_lower_reanal, tau_upper = tau_upper_reanal, 
                               pred_lower = pred_lower_reanal, pred_upper = pred_upper_reanal)
@@ -113,7 +114,7 @@ merged_data <- rbind(res_meta_orig[, c(1:7, 11:12)], res_meta_reanal)
 merged_data$analysis <- rep(c("Original", "Re-analysis"), c(dim(res_meta_orig)[1], dim(res_meta_reanal)[1]))
 
 # Add author as a separate column
-merged_data$First_author <- rep(unique(data_meta$First_author_SR), 2)
+merged_data$First_author <- rep(unique(data_meta_outcome$First_author_SR), 2)
 
 # Add year as a separate column
 merged_data$Year <- rep(unlist(lapply(data_set_split, function(x) unique(x$Year_review))), 2)
@@ -125,7 +126,7 @@ merged_data_new <- merged_data[order(merged_data$Year, merged_data$First_author)
 merged_data_new$order <- rep(1:8, each = 2)
 
 # Create the grouped interval plot and save as .tiff
-tiff("./40_Analysis & Results/Figure 4.tiff", 
+tiff("./Figures/Figure 4.tiff", 
      height = 25, 
      width = 42, 
      units = 'cm', 
@@ -209,7 +210,7 @@ dev.off()
 
 ## Interval plot on *tau-squared* ----
 # Create interval plot and save as .tiff
-tiff("./40_Analysis & Results/Supplementary Figure 4.tiff", 
+tiff("./Figures/Supplementary Figure 4.tiff", 
      height = 25, 
      width = 45, 
      units = 'cm', 
@@ -268,7 +269,7 @@ dev.off()
 
 ## Interval plot on *I-squared* ----
 # Add author as a separate column
-res_meta_orig$First_author <- unique(data_meta$First_author_SR)
+res_meta_orig$First_author <- unique(data_meta_outcome$First_author_SR)
 
 # Add year as a separate column
 res_meta_orig$Year <- unlist(lapply(data_set_split, function(x) unique(x$Year_review)))
@@ -277,7 +278,7 @@ res_meta_orig$Year <- unlist(lapply(data_set_split, function(x) unique(x$Year_re
 res_meta_orig_new <- res_meta_orig[order(res_meta_orig$Year, res_meta_orig$First_author), ]
 
 # Create interval plot and save as .tiff
-tiff("./40_Analysis & Results/Supplementary Figure 5.tiff", 
+tiff("./Figures/Supplementary Figure 5.tiff", 
      height = 25, 
      width = 45, 
      units = 'cm', 
@@ -339,11 +340,10 @@ dev.off()
 
 ## Produce panel of forest plot per review
 forest <- lapply(meta_reanal, function(x) forest(x,
-                                                 fixed = FALSE,
+                                                 common = FALSE,
                                                  prediction = TRUE,
                                                  print.I2.ci = TRUE,
                                                  print.tau = TRUE,
                                                  print.tau.ci = TRUE,
                                                  print.pval.Q = FALSE,
-                                                 digits.sd = 2,
-                                                 args.gr = list(title = "My Forest Plot")))
+                                                 digits.sd = 2))
