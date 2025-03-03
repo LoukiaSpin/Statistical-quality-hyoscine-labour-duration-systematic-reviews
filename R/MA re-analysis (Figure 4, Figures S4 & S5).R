@@ -30,6 +30,7 @@ meta_orig <- lapply(data_set_split, function(x) metacont(HBB_n, HBB_mean, HBB_sd
                                                          data = x, 
                                                          method.tau = "DL",
                                                          method.tau.ci = "",
+                                                         method.predict = "V", 
                                                          sm = "MD"))
 
 # Extract pooled MD in a vector
@@ -50,6 +51,12 @@ tau_lower_orig <- unlist(lapply(meta_orig, function(x) x$lower.tau))
 # Extract upper bound of tau in a vector
 tau_upper_orig <- unlist(lapply(meta_orig, function(x) x$upper.tau))
 
+# Extract lower bound of prediction in a vector
+pred_lower_orig <- unlist(lapply(meta_orig, function(x) x$lower.predict))
+
+# Extract upper bound of prediction in a vector
+pred_upper_orig <- unlist(lapply(meta_orig, function(x) x$upper.predict))
+
 # Extract I2 in a vector
 I2_orig <- unlist(lapply(meta_orig, function(x) x$I2))
 
@@ -64,7 +71,7 @@ res_meta_orig <- data.frame(review = paste(unique(data_meta_outcome$First_author
                             MD = MD_orig, MD_lower = MD_lower_orig, MD_upper = MD_upper_orig, 
                             tau = tau_orig, tau_lower = tau_lower_orig, tau_upper = tau_upper_orig, 
                             I2 = I2_orig, I2_lower = I2_lower_orig, I2_upper = I2_upper_orig, 
-                            pred_lower = NA, pred_upper = NA)
+                            pred_lower = NA, pred_upper = NA) # pred_lower = pred_lower_orig, pred_upper = pred_upper_orig
 
 
 ## Perform RE-MA with REML and HKSJ CI for summary MD and obtain prediction intervals ----
