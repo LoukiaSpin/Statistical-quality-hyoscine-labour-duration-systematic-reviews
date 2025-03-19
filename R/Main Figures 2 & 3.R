@@ -78,6 +78,9 @@ data_meta_level$author_year <- factor(paste(data_meta_level$First_author, data_m
 # Re-order the whole dataset by year and alphabetically
 data_meta_new <- data_meta_level[order(data_meta_level$Year, data_meta_level$First_author), ]
 
+# Mohaghegh 2020 applied a common-effect model in the selected meta-analysis
+data_meta_new$tau2_reported[data_meta_new$tau2_reported == "Common-effect model applied"] <- "No"
+
 # Re-construct isolated dataset to create a heatmap-like graph
 report_meta <- data.frame(value = unlist(data_meta_new[, c(21, 19, 23, 25, 27)]),
                           tool = rep(c("I-squared", "tau-squared", "I-squared", "tau-squared", "Cochran's Q-statistic"), each = dim(data_meta_new)[1]),

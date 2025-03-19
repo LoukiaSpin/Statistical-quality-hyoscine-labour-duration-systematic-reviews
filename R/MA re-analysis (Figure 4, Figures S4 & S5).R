@@ -15,8 +15,6 @@ lapply(list.of.packages, require, character.only = TRUE); rm(list.of.packages)
 
 ## Load data ----
 load("./data/data_meta.RData")
-#data_meta <- as.data.frame(read_excel("./41_Extraction Reviews & Trials/Extraction form_Included studies.xlsx", sheet = "Arm-based data"))[, -18]
-#colnames(data_meta)[c(3:4, 6)] <- c("First_author_SR", "Year_review", "First_author_trial")
 
 
 ## Split dataset per selected meta-analysis ----
@@ -80,7 +78,8 @@ meta_reanal <- lapply(data_set_split, function(x) metacont(HBB_n, HBB_mean, HBB_
                                                            data = x, 
                                                            method.tau = "REML",
                                                            method.random.ci = "HK",
-                                                           method.predict = "HK", 
+                                                           method.predict = "HK-PR", 
+                                                           method.tau.ci = "QP",
                                                            sm = "MD"))
 
 # Extract pooled MD in a vector
@@ -200,7 +199,8 @@ ggplot(merged_data_new,
             position = position_dodge(width = 0.76),
             vjust = -0.8) +
   scale_color_manual(values = c("#009E73","#0072B2")) +
-  scale_x_continuous(breaks = sort(c(seq(-700, 350, 200), 0))) +
+  #scale_x_continuous(breaks = sort(c(seq(-450, 350, 200), 0))) +
+  scale_x_continuous(breaks = setdiff(sort(c(seq(-450, 350, 60), -60, 0, 60)), c(-30, 30))) +
   scale_y_discrete(labels = unique(merged_data_new$review),
                    expand = c(0.05, 0.4)) +
   labs(x = "Mean difference (in minutes)",
