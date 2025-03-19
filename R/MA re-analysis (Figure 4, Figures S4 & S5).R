@@ -126,7 +126,7 @@ merged_data$First_author <- rep(unique(data_meta_outcome$First_author_SR), 2)
 merged_data$Year <- rep(unlist(lapply(data_set_split, function(x) unique(x$Year_review))), 2)
 
 # Add the number of the articles in the reference list as a separate column
-merged_data$reference <- rep(c("[7]", "[10]", "[47]", "[48]", "[46]", "[5]", "[49]", "[50]"), 2)
+merged_data$reference <- rep(c("[7]", "[10]", "[48]", "[49]", "[47]", "[5]", "[50]", "[51]"), 2)
 
 # Re-order the whole dataset by year and alphabetically
 merged_data_new <- merged_data[order(merged_data$Year, merged_data$First_author), ]
