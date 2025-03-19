@@ -125,6 +125,9 @@ merged_data$First_author <- rep(unique(data_meta_outcome$First_author_SR), 2)
 # Add year as a separate column
 merged_data$Year <- rep(unlist(lapply(data_set_split, function(x) unique(x$Year_review))), 2)
 
+# Add the number of the articles in the reference list as a separate column
+merged_data$reference <- rep(c("[7]", "[10]", "[47]", "[48]", "[46]", "[5]", "[49]", "[50]"), 2)
+
 # Re-order the whole dataset by year and alphabetically
 merged_data_new <- merged_data[order(merged_data$Year, merged_data$First_author), ]
 
@@ -201,7 +204,7 @@ ggplot(merged_data_new,
   scale_color_manual(values = c("#009E73","#0072B2")) +
   #scale_x_continuous(breaks = sort(c(seq(-450, 350, 200), 0))) +
   scale_x_continuous(breaks = setdiff(sort(c(seq(-450, 350, 60), -60, 0, 60)), c(-30, 30))) +
-  scale_y_discrete(labels = unique(merged_data_new$review),
+  scale_y_discrete(labels = unique(paste(merged_data_new$review, merged_data_new$reference)),
                    expand = c(0.05, 0.4)) +
   labs(x = "Mean difference (in minutes)",
        y = "",
@@ -263,7 +266,7 @@ ggplot(merged_data_new,
   labs(x = "Tau (Between-trial standard deviation)",
        y = "",
        colour = "Analysis") +
-  scale_y_discrete(labels = unique(merged_data_new$review),
+  scale_y_discrete(labels = unique(paste(merged_data_new$review, merged_data_new$reference)),
                    expand = c(0, 0.5)) +
   theme_classic() +
   theme(axis.title = element_text(size = 16, face = "bold"),
@@ -333,7 +336,7 @@ ggplot(res_meta_orig_new,
                                "Substantial" = "#E69F00",
                                "Considerable" = "#D55E00"),
                     breaks = c("Unimportant", "Moderate", "Substantial", "Considerable")) +
-  scale_y_discrete(labels = unique(merged_data_new$review)) +
+  scale_y_discrete(labels = unique(paste(merged_data_new$review, merged_data_new$reference))) +
   scale_x_continuous(limits = c(0, 100)) +
   theme_classic() +
   guides(fill = guide_legend(override.aes = list(alpha = 0.4))) +

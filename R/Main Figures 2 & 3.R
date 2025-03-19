@@ -24,6 +24,9 @@ load("./data/data_meta_level.RData")
 # Paste First_author with Year
 data_syst_level$author_year <- factor(paste(data_syst_level$First_author, data_syst_level$Year))
 
+# Add the number of the articles in the reference list
+data_syst_level$author_year <- paste(data_syst_level$author_year, c("[7]", "[10]", "[47]", "[48]", "[46]", "[5]", "[49]", "[50]"))
+
 # Re-order the whole dataset by year and alphabetically
 data_syst_new <- data_syst_level[order(data_syst_level$Year, data_syst_level$First_author), ]
 
@@ -74,6 +77,9 @@ dev.off()
 ## Main Figure 3 (SELECTED META-ANALYSIS LEVEL) ----
 # Paste First_author with Year
 data_meta_level$author_year <- factor(paste(data_meta_level$First_author, data_meta_level$Year))
+
+# Add the number of the articles in the reference list
+data_meta_level$author_year <- paste(data_meta_level$author_year, c("[7]", "[10]", "[47]", "[48]", "[46]", "[5]", "[49]", "[50]"))
 
 # Re-order the whole dataset by year and alphabetically
 data_meta_new <- data_meta_level[order(data_meta_level$Year, data_meta_level$First_author), ]
