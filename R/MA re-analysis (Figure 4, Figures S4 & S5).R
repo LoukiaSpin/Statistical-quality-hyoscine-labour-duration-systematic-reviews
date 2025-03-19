@@ -1,7 +1,7 @@
 #*******************************************************************************
 #*
-#*                          Re-analysing selected meta-analyses                                                                                                      
-#*              (Systematic review, meta-analysis and trial level)                             
+#*                      Re-analysing selected meta-analyses                                                                                                                           
+#*                 (Main Figure 4 & Supplementary Figures 4 & 5)                                                             
 #*                          
 #* Author: Loukia M. Spineli
 #* Date: February 2025
